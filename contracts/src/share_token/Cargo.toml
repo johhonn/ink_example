@@ -1,0 +1,49 @@
+[package]
+name = "share_token"
+version = "0.1.0"
+authors = ["jjj <jjj17@protonmail.com"]
+edition = "2021"
+
+[dependencies]
+ink = { version = "4.2.1", default-features = false }
+
+scale = { package = "parity-scale-codec", version = "3", default-features = false, features = [
+    "derive",
+] }
+scale-info = { version = "2.6", default-features = false, features = [
+    "derive",
+], optional = true }
+
+openbrush = { tag = "3.1.0", git = "https://github.com/727-Ventures/openbrush-contracts", default-features = false, features = [
+    "psp22",
+    "ownable",
+    "pausable",
+    "access_control",
+] }
+
+# lending_project = { path = "../..", default-features = false }
+
+[lib]
+name = "share_token"
+path = "lib.rs"
+
+[features]
+default = ["std"]
+std = [
+    "ink/std",
+    "scale/std",
+    "scale-info",
+    "scale-info/std",
+
+    # These dependencies
+    # "lending_project/std",
+    "openbrush/std",
+]
+ink-as-dependency = []
+
+[profile.dev]
+codegen-units = 16      # Use slightly better optimizations.
+overflow-checks = false
+
+[profile.release]
+overflow-checks = false
