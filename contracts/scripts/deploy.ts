@@ -39,15 +39,33 @@ const main = async () => {
   ])
   const token_instance = new ContractPromise(api, token_data.abi, share_token.address)
   const value = 10000 // only for payable messages, call will fail otherwise
-  const gasLimit = 3000n * 1000000n
+  const gasLimit = 1000000n
   const storageDepositLimit = null
   const incValue = 1
-  //console.log(token_instance.tx)
-  // Send the transaction, like elsewhere this is a normal extrinsic
-  // with the same rules as applied in the API (As with the read example,
-  // additional params, if required can follow - here only one is needed)
-  //transfer_ownership to vault.address
+  // Attempt Mint Function
+  const mint = await token_instance.tx['psp22Mintable::mint'](
+    { storageDepositLimit, gasLimit },
+    account2.address,
+    1000,
+  ).signAndSend(account, (result) => {
+    if (result.status.isInBlock) {
+      console.log('in a block')
+    } else if (result.status.isFinalized) {
+      console.log('finalized')
+    }
+  })
 
+  console.log(mint)
+  //Attempt to Query Owner
+  const { gasRequired, storageDeposit, result, output } = await token_instance.query[
+    'ownable::owner'
+  ](account.address, {
+    storageDepositLimit,
+  })
+  console.log('QUERY OUTPUT')
+  console.log(result.toHuman())
+
+  // Attempt to change Owner
   const transfer_ownership = await token_instance.tx['ownable::transferOwnership'](
     { storageDepositLimit, gasLimit },
     account2.address,
